@@ -1,0 +1,51 @@
+<!--
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            QR Code App
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+-->
+
+<ion-content padding>
+    <!--
+  <ion-item>
+    <ion-input type="text" placeholder="MY QR Code data" [(ngModel)]="qrData"></ion-input>
+  </ion-item>
+  <button ion-button full icon-left (click)="createCode()"><ion-icon name="barcode"></ion-icon>Create Code</button>
+  <button ion-button full icon-left (click)="scanCode()" color="secondary"><ion-icon name="qr-scanner"></ion-icon>Scan Code</button>
+
+  <ion-card *ngIf="createdCode">
+    <ngx-qrcode [qrc-value]="createdCode"></ngx-qrcode>
+    <ion-card-content>
+      <p>Value: {{ createdCode }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="scannedCode">
+    <ion-card-content>
+      Result from Scan: {{ scannedCode }}
+    </ion-card-content>
+  </ion-card>
+-->
+    <div class="bg-full">
+        <div margin-top text-center>
+            <img src="assets/imgs/magenta.png" class="logo-img" />
+        </div>
+        <div padding-top id="home-btn">
+            <button ion-button color="dafault" block (click)="scanCode()">
+                <ion-icon ios="ios-qr-scanner" md="md-qr-scanner"></ion-icon>
+                <span class="txt-btn" padding-left>scan</span>
+            </button>
+            <button ion-button color="secondary" block>
+                <ion-icon ios="ios-unlock" md="md-unlock"></ion-icon>
+                <span class="txt-btn" padding-left>activation</span>
+            </button>
+            <button ion-button color="sunny" block (click)="goTo('AboutPage')">
+                <ion-icon ios="ios-information-circle-outline" md="md-information-circle"></ion-icon>
+                <span class="txt-btn" padding-left>about</span>
+            </button>
+        </div>
+    </div>
+</ion-content>
