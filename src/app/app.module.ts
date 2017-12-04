@@ -5,15 +5,17 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { IonicImageViewerModule } from 'ionic-img-viewer';
 import { File } from '@ionic-native/file';
 import { Camera } from '@ionic-native/camera';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { NgxQRCodeModule } from 'ngx-qrcode2';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { AppFunctionProvider } from '../providers/app-function/app-function';
 import { SocialSharing } from '@ionic-native/social-sharing';
-
+import { SharemeProvider } from '../providers/shareme/shareme';
+import { HttpModule } from '@angular/http';
+import { AppRate } from '@ionic-native/app-rate';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @NgModule({
   declarations: [
@@ -22,8 +24,9 @@ import { SocialSharing } from '@ionic-native/social-sharing';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    IonicImageViewerModule,
-    NgxQRCodeModule
+    NgxQRCodeModule,
+    HttpModule,
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -33,13 +36,14 @@ import { SocialSharing } from '@ionic-native/social-sharing';
     StatusBar,
     SplashScreen,
     BarcodeScanner,
-//    PhotoViewer,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    AppFunctionProvider,
     SocialSharing,
     File,
     PhotoViewer,
-    Camera
+    Camera,
+    SharemeProvider,
+    AppRate,
+    ScreenOrientation
   ]
 })
 export class AppModule {}

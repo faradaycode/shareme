@@ -4,15 +4,18 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
-
-  <ion-navbar>
-    <ion-title>activation</ion-title>
-  </ion-navbar>
-
-</ion-header>
-
-
-<ion-content padding>
-
+<ion-content padding id="activation-bg">
+    <div margin-top text-center>
+        <ion-img src="assets/imgs/sharelogo.png" style="background: none" height="125" width="250"></ion-img>
+    </div>
+    <ion-list margin-top>
+        <ion-item no-lines>
+            <!--            <ion-label color="primary">Kode Aktivasi</ion-label>-->
+            <ion-input [value]="kode" placeholder="Kode Buku" [(ngModel)]="kode" class="actx"></ion-input>
+            <button ion-button style="height: 100%" color="secondary" item-right (click)='validate()'>Validasi</button>
+        </ion-item>
+        <ion-item no-lines text-center>
+            <button ion-button clear full color="primary" (click)="nextTime()">Lain Kali</button>
+        </ion-item>
+    </ion-list>
 </ion-content>

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, Platform, NavParams, AlertController } from 'ionic-angular';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { File } from '@ionic-native/file';
-
-//import { AppFunctionProvider } from '../../providers/app-function/app-function';
+import { SharemeProvider } from '../../providers/shareme/shareme';
+import { AppRate } from '@ionic-native/app-rate';
 
 @IonicPage()
 @Component({
@@ -12,77 +12,107 @@ import { File } from '@ionic-native/file';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  qrData = null;
-  createdCode = null;
-  scannedCode = null;
-  limiter = 0;
+  counter: number = 0;
   constructor(
       private barcodeScanner: BarcodeScanner,
       public navCtl: NavController,
       private photoViewer: PhotoViewer,
       private file: File,
-      private tos: ToastController
-  ) { }
-
-//create qrcode based on input text
-//  createCode() {
-//    this.createdCode = this.qrData;
-//  }
+      private platform: Platform,
+      private sharef: SharemeProvider,
+      private parama: NavParams,
+      private alert: AlertController,
+      private rating: AppRate
+  ) {
+      this.platform.ready().then(()=> {
+          //rating plugin
+          this.rating.preferences = {
+                openStoreInApp: false,
+                displayAppName: 'Doa Harian Muslim',
+                usesUntilPrompt: 2,
+                promptAgainForEachNewVersion: false,
+                storeAppURL: {
+                  android: 'market://details?id=com.magentamedia.shareme'
+                },
+                customLocale: {
+                  title: 'Do you enjoy %@?',
+                  message: 'If you enjoy using %@, would you mind taking a moment to rate it? Thanks so much!',
+                  cancelButtonLabel: 'No, Thanks',
+                  laterButtonLabel: 'Remind Me Later',
+                  rateButtonLabel: 'Rate It Now'
+                },
+                callbacks: {
+                  onRateDialogShow: function(callback){
+                    console.log('rate dialog shown!');
+                  },
+                  onButtonClicked: function(buttonIndex){
+                    console.log('Selected index: -> ' + buttonIndex);
+                  }
+                }
+            };
+            this.rating.promptForRating(false);
+             let param = this.parama.get('values');
+             if(param) {
+                 let alert = this.alert.create({
+                     title: 'Informasi',
+                     subTitle: 'Aplikasi Ini Belum di Aktivasi, Anda Tidak Akan Bisa Share Gambar Setelah 5 Kali Scan',
+                     buttons: ['OK']
+                 });
+                 alert.present();
+             }
+             this.sharef.getKeyVal('appstatus').then(sta => {
+                 if(!sta) {
+                     this.sharef.getKeyVal('limiter').then(res => {
+                         if(res > 0) {
+                             this.counter = res;
+                         }
+                     });
+                 }
+             });
+        
+        });  
+  }
 
 //scan qr code
   scanCode() {
-    this.limiter++;
-    if(this.limiter>5) {
-        let limitn = this.tos.create({
-            message: "Scan Limit Reached, Please Activate This Apps",
-            duration: 3000,
-            position: 'bottom'
-        });
-        limitn.present();
-    } else {
-        this.barcodeScanner.scan().then(barcodeData => {
-            //regex for scanned QR
-            var regScan = new RegExp('^[0-9]+$');
-            var regTest = regScan.test(barcodeData.text);
-            if (regTest == false) {
-                let toaster = this.tos.create({
-                    message: "QRCode is Invalid",
-                    duration: 3000,
-                    position: 'bottom'
+    this.barcodeScanner.scan().then(barcodeData => {
+        //if qr valid then check file in app directory
+        this.file.checkFile(this.file.applicationDirectory+"www/assets/media/","hal"+barcodeData.text+".jpg").then(
+            (exist) => {
+                console.log(exist);
+                this.sharef.getKeyVal('appstatus').then(res=>{
+                    if(!res) {
+                        this.counter++;
+                        this.sharef.setKeyVal('limiter',this.counter);
+                    }
                 });
-                toaster.present();
+                this.onViewImg(barcodeData.text);
+            },
+            (error) => {
+                console.error(error);
+                this.sharef.onToast("Invalid QRCode");
             }
-
-            //if qr valid then check file in app directory
-            this.file.checkFile(this.file.applicationDirectory+"www/assets/media/","hal"+barcodeData.text+".jpg").then(
-                (exist) => {
-                    console.log(exist);
-                    this.onViewImg(barcodeData.text);
-                },
-                (error) => {
-                    let toaster1 = this.tos.create({
-                        message: "Resource Not Found",
-                        duration: 3000,
-                        position: 'bottom'
-                    });
-                    toaster1.present();
-                }
-            );
-        }, (err) => {
-            console.log('Error: ', err);
-        });
-     }
+        );
+    }, (err) => {
+        console.log('Error: ', err);
+    });
   }
     
     //navigation
     goTo(id) {
         this.navCtl.push(id);
     }
-
     //image view and share
     onViewImg(img) {
         const url = "www/assets/media/";
-        console.log(this.file.applicationDirectory , img);
-        this.photoViewer.show(this.file.applicationDirectory + url + "hal" + img + ".jpg");
+        this.sharef.getKeyVal('limiter').then(
+            result => {
+                if(result >= 5) {
+                    this.photoViewer.show(this.file.applicationDirectory + url + "hal" + img + ".jpg",'', {share: false});
+                } else {
+                    this.photoViewer.show(this.file.applicationDirectory + url + "hal" + img + ".jpg",'', {share: true});
+                }
+            }
+        );
     }
 }
