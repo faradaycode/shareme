@@ -1,49 +1,25 @@
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
-import { MyApp } from './app.component';
-import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { File } from '@ionic-native/file';
-import { Camera } from '@ionic-native/camera';
-import { IonicStorageModule } from '@ionic/storage';
+import { RouteReuseStrategy } from '@angular/router';
 
-import { NgxQRCodeModule } from 'ngx-qrcode2';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { SharemeProvider } from '../providers/shareme/shareme';
-import { HttpModule } from '@angular/http';
-import { AppRate } from '@ionic-native/app-rate';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { Toast } from '@ionic-native/toast/ngx';
 
 @NgModule({
-  declarations: [
-    MyApp
-  ],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp),
-    NgxQRCodeModule,
-    HttpModule,
-    IonicStorageModule.forRoot()
-  ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp
-  ],
+  declarations: [AppComponent],
+  entryComponents: [],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
   providers: [
     StatusBar,
     SplashScreen,
-    BarcodeScanner,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    SocialSharing,
-    File,
-    PhotoViewer,
-    Camera,
-    SharemeProvider,
-    AppRate,
-    ScreenOrientation
-  ]
+    Toast,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
